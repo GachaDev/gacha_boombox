@@ -1,5 +1,5 @@
 import { Input, Modal } from "@mantine/core";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import YouTube from "react-youtube";
 import { fetchNui } from "../../../../../utils/fetchNui";
 
@@ -13,6 +13,7 @@ export default function AddModal({opened, close, playlistActive}:Props) {
     const [url, setUrl] = useState('');
     const [urlT, setUrlT] = useState('');
     const [isAdded, setIsAdded] = useState(false);
+    //@ts-ignore
     const playerRef = useRef<YT.Player | null>(null);
     const AddSong = async () => {
         const youtubeUrl = new URL(url);
@@ -55,14 +56,32 @@ export default function AddModal({opened, close, playlistActive}:Props) {
         close();
     }
 
+    const [addSongLabel, setAddSongLabel] = useState('Add song');
+
+
+    const getLibraryLabel = async () => {
+        try {
+            const res = await fetchNui<string>('addSongLabel');
+            if (res) {
+                setAddSongLabel(res)
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    useEffect(()=>{
+        getLibraryLabel();
+    }, [])
+
     return (
-        <Modal opened={opened} onClose={close} title="Añadir canción">
+        <Modal opened={opened} onClose={close} title={addSongLabel}>
             <Input.Wrapper label="Youtube url" required maw={320} mx="auto" onChange={(event) => setUrl((event.target as HTMLInputElement).value)}>
                 <Input<any>
                     placeholder="Example: https://www.youtube.com/watch?v=QlZNGcVfeF0"
                 />
                 <div className='contBut'>
-                    <button onClick={()=>{AddSong()}} className='addSongButton'>Añadir canción</button>
+                    <button onClick={()=>{AddSong()}} className='addSongButton'>{addSongLabel}</button>
                 </div>
             </Input.Wrapper>
             <div style={{display: 'none'}}>

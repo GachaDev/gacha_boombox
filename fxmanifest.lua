@@ -1,6 +1,6 @@
 fx_version "cerulean"
 
-description "A boombox script that play yt music"
+description "A boombox script that play yt music by gachaa"
 author "gachaa"
 
 lua54 'yes'
@@ -11,9 +11,17 @@ games {
 
 ui_page 'web/build/index.html'
 
-client_script "client/**/*"
-server_script "@oxmysql/lib/MySQL.lua"
-server_script "server/**/*"
+-- shared_script '@es_extended/imports.lua' --Import this if you are using es_extended
+
+client_scripts {
+  'Config.lua',
+  "client/**/*"
+}
+server_script {
+  "@oxmysql/lib/MySQL.lua",
+  'Config.lua',
+  "server/**/*"
+}
 
 files {
 	'web/build/index.html',

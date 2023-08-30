@@ -3,6 +3,8 @@ import { Plus } from 'tabler-icons-react';
 import { ActionIcon } from '@mantine/core';
 import Cover from '../../Common/Cover';
 import LibraryMenu from './LibraryMenu/LibraryMenu';
+import { useEffect, useState } from 'react';
+import { fetchNui } from '../../../utils/fetchNui';
 
 export interface Song {
     id: number;
@@ -22,19 +24,36 @@ interface Props {
     Playlists: Playlist[];
     setPlaylistActive: (i: number) => void;
     playlistActive: number;
-    newPlaylist: (name:string)=> void;
+    setOpenedPlaylist: (val:boolean)=> void;
 }
 
-export default function Library({Playlists, setPlaylistActive, playlistActive, newPlaylist}:Props) {
+export default function Library({Playlists, setPlaylistActive, playlistActive, setOpenedPlaylist}:Props) {
+    const [libraryLabel, setLibraryLabel] = useState('Your library');
+
+    const getLibraryLabel = async () => {
+        try {
+            const res = await fetchNui<string>('getLibraryLabel');
+            if (res) {
+                setLibraryLabel(res)
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    useEffect(()=>{
+        getLibraryLabel();
+    }, [])
+
     return (
         <div className="myPlaylists">
             <div className="myPlaylistNav">
                 <div className="myPlaylistTitle">
                     <Books strokeWidth={1} color={'white'}/>
-                    <span>Tu biblioteca</span>
+                    <span>{libraryLabel}</span>
                 </div>
                 <div className="addPlaylists">
-                    <LibraryMenu newPlaylist={newPlaylist} />
+                    <LibraryMenu setOpenedPlaylist={setOpenedPlaylist} />
                 </div>
             </div>
             <div className="myPlaylistList">

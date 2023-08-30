@@ -2,7 +2,7 @@ import { ActionIcon } from "@mantine/core";
 import Cover from "../../Common/Cover";
 import { Playlist } from "../Library/Library";
 import { PlayerPlay } from 'tabler-icons-react';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PlaylistMenu from "./PlaylistMenu/PlaylistMenu";
 import { Trash } from 'tabler-icons-react';
 import { fetchNui } from "../../../utils/fetchNui";
@@ -11,13 +11,40 @@ interface Props {
     playlistActive: number;
     playSong: (songUrl: string, playlist: Playlist, index: number) => void;
     exitPlaylist: ()=>void;
+    setOpenedPlaylist: (val:boolean)=> void;
 }
 
-export default function DisplayPlaylist({Playlists, playlistActive, playSong, exitPlaylist}:Props) {
+export default function DisplayPlaylist({Playlists, playlistActive, playSong, exitPlaylist, setOpenedPlaylist}:Props) {
     const [isHovered, setIsHovered] = useState(-1);
     const deleteSongPlaylist = (id: number) => {
         fetchNui('deleteSongPlaylist', {playlist: Playlists[playlistActive].id, songId: id});
     }
+    const [titleFirstMessage, setTitleFirstMessage] = useState("Don't have a playlist yet?");
+    const [secondFirstMessage, setSecondFirstMessage] = useState('Create a Playlist');
+
+    const getLibraryLabel = async () => {
+        try {
+            const res = await fetchNui<string>('titleFirstMessage');
+            if (res) {
+                setTitleFirstMessage(res)
+            }
+        } catch (e) {
+            console.error(e);
+        }
+
+        try {
+            const res2 = await fetchNui<string>('secondFirstMessage');
+            if (res2) {
+                setSecondFirstMessage(res2)
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    useEffect(()=>{
+        getLibraryLabel();
+    }, [])
     return (
         <div className="playlistSection">
             {
@@ -74,7 +101,8 @@ export default function DisplayPlaylist({Playlists, playlistActive, playSong, ex
                     </div>
                 ) : (
                     <div className="noPlaylistSelected">
-                        <h4>No Playlist selected</h4>
+                        <h4>{titleFirstMessage}</h4>
+                        <span className="createPlaylist" onClick={()=>{setOpenedPlaylist(true)}}>{secondFirstMessage}</span>
                     </div>
                 )
             }

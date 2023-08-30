@@ -19,19 +19,6 @@ local function toggleNuiFrame(shouldShow)
     end
 end
 
-function ShowHelpNotification(msg)
-    AddTextEntry('HelpNotification', msg)
-    BeginTextCommandDisplayHelp('HelpNotification')
-    EndTextCommandDisplayHelp(0, false, true, -1)
-end
-
-function ShowNotification(msg)
-    SetTextFont(fontId)
-	SetNotificationTextEntry('STRING')
-	AddTextComponentSubstringPlayerName(msg)
-	DrawNotification(false, true)
-end
-
 RegisterNUICallback('hideFrame', function(_, cb)
     toggleNuiFrame(false)
     cb({})
@@ -156,7 +143,7 @@ Citizen.CreateThread(function()
                 end
                 DrawMarker(20, v.coords.x, v.coords.y, v.coords.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.3, 0, 0, 0, 255, false, false, false, true, false, false, false)
                 if distance < 1.5 then
-                    ShowHelpNotification('Presiona ~INPUT_CONTEXT~ para acceder al altavoz o ~INPUT_FRONTEND_RRIGHT~ para recogerlo')
+                    ShowHelpNotification(Config.Translations.helpNotify)
                     if IsControlJustPressed(1, 38) then
                         SendReactMessage('setRepro', tonumber(k - 1))
                         if not playlistsLoaded then
@@ -170,6 +157,7 @@ Citizen.CreateThread(function()
                     end
                     if IsControlJustPressed(0, 194) and not isInUI then
                         TriggerServerEvent('gacha_boombox:server:deleteBoombox', k, v.coords.x)
+                        Wait(200)
                     end
                 end
             else
@@ -199,4 +187,40 @@ end)
 
 RegisterNetEvent('gacha_boombox:client:resyncPlaylists', function ()
     SendReactMessage('getPlaylists')
+end)
+
+RegisterNUICallback('getLibraryLabel', function(_, cb)
+    cb(Config.Translations.libraryLabel)
+end)
+
+RegisterNUICallback('newPlaylistLabel', function(_, cb)
+    cb(Config.Translations.newPlaylistLabel)
+end)
+
+RegisterNUICallback('playlistName', function(_, cb)
+    cb(Config.Translations.playlistName)
+end)
+
+RegisterNUICallback('addSongLabel', function(_, cb)
+    cb(Config.Translations.addSong)
+end)
+
+RegisterNUICallback('deletePlaylistLabel', function(_, cb)
+    cb(Config.Translations.deletePlaylist)
+end)
+
+RegisterNUICallback('importPlaylistLabel', function(_, cb)
+    cb(Config.Translations.importPlaylistLabel)
+end)
+
+RegisterNUICallback('Unkown', function(_, cb)
+    cb(Config.Translations.unkown)
+end)
+
+RegisterNUICallback('titleFirstMessage', function(_, cb)
+    cb(Config.Translations.titleFirstMessage)
+end)
+
+RegisterNUICallback('secondFirstMessage', function(_, cb)
+    cb(Config.Translations.secondFirstMessage)
 end)

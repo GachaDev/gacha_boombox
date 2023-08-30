@@ -1,6 +1,7 @@
 CREATE TABLE `gacha_playlists` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(50) NOT NULL DEFAULT '0',
+	`owner` VARCHAR(50) NOT NULL DEFAULT '',
 	PRIMARY KEY (`id`)
 )
 COLLATE='utf8mb4_general_ci'

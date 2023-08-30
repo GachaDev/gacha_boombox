@@ -1,17 +1,42 @@
 import { Menu } from "@mantine/core";
-import { useState } from "react";
-import { Edit, PackgeImport, PlaylistAdd, Plus, Settings, Trash, X } from 'tabler-icons-react';
+import { useEffect, useState } from "react";
+import { PackgeImport, PlaylistAdd, Plus } from 'tabler-icons-react';
 import ModalImportPlaylist from "./ModalImportPlaylist/ModalImportPlaylist";
-import ModalAddPlaylist from "./ModalAddPlaylist/ModalAddPlaylist";
+import { fetchNui } from "../../../../utils/fetchNui";
 
 interface Props {
-    newPlaylist: (name:string)=> void;
+    setOpenedPlaylist: (val:boolean)=> void;
 }
 
-export default function LibraryMenu({newPlaylist}:Props) {
+export default function LibraryMenu({setOpenedPlaylist}:Props) {
     const [opened, setOpened] = useState(false);
     const [openedMenu, setOpenedMenu] = useState(false);
-    const [openedMenu2, setOpenedMenu2] = useState(false);
+    const [newPlaylist, setNewPlaylist] = useState('New Playlist');
+    const [importPlaylist, setImportPlaylist] = useState('Import a existing Playlist');
+
+    const getLibraryLabel = async () => {
+        try {
+            const res = await fetchNui<string>('newPlaylistLabel');
+            if (res) {
+                setNewPlaylist(res)
+            }
+        } catch (e) {
+            console.error(e);
+        }
+
+        try {
+            const res2 = await fetchNui<string>('importPlaylistLabel');
+            if (res2) {
+                setImportPlaylist(res2)
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    useEffect(()=>{
+        getLibraryLabel();
+    }, [])
     return (
         <Menu opened={opened} onChange={setOpened}>
             <Menu.Target>
@@ -20,11 +45,10 @@ export default function LibraryMenu({newPlaylist}:Props) {
                 </div>
             </Menu.Target>
             <Menu.Dropdown>
-                <Menu.Item color="white" onClick={()=>{setOpenedMenu2(true)}} icon={<PlaylistAdd size={14} />}>Añadir nueva playlist</Menu.Item>
-                <Menu.Item color="white" onClick={()=>{setOpenedMenu(true)}} icon={<PackgeImport size={14} />}>Importar Playlist Existente</Menu.Item>
+                <Menu.Item color="white" onClick={()=>{setOpenedPlaylist(true)}} icon={<PlaylistAdd size={14} />}>{newPlaylist}</Menu.Item>
+                <Menu.Item color="white" onClick={()=>{setOpenedMenu(true)}} icon={<PackgeImport size={14} />}>{importPlaylist}</Menu.Item>
             </Menu.Dropdown>
             <ModalImportPlaylist opened={openedMenu} close={()=>{setOpenedMenu(false)}} />
-            <ModalAddPlaylist opened={openedMenu2} close={()=>{setOpenedMenu2(false)}} newPlaylist={newPlaylist} />
         </Menu>
     );
 }

@@ -5,28 +5,16 @@ import { Playlist } from './Library/Library';
 import { VideoObject } from '../App';
 import { fetchNui } from '../../utils/fetchNui';
 import { useNuiEvent } from '../../hooks/useNuiEvent';
+import ModalAddPlaylist from './Library/LibraryMenu/ModalAddPlaylist/ModalAddPlaylist';
 
 interface Props {
     playSong: (songUrl: string, playlist: Playlist, index: number) => void;
 }
 
 export default function Main({playSong}:Props) {
-    const [Playlists, setPlaylists] = useState<Playlist[]>([
-        {id: 0, name: 'Mi playlist 1', songs: [
-            {id: 0, name: 'Mora - MEDIA LUNA (Visualizer) | ESTRELLA', author: 'Mora', maxDuration: 135, url: 'H3ZZA-X1QXE'},
-            {id: 1, name: 'Feid, ICON - FERXXO 151 (Official Video)', author: 'Feid', maxDuration: 227, url: 'ww7UQTDsPEc'},
-            {id: 2, name: 'YoSoyPlex, Ruven - Modo Avión (Video Oficial)', author: 'YoSoyPlex', maxDuration: 175, url: '2bczbzNRO4Y'},
-            {id: 3, name: 'spreen - a casa pete', author: 'Spreen', maxDuration: 82, url: '5rjCRPG3mkw'},
-            {id: 4, name: 'KAROL G, Peso Pluma - QLONA (Visualizer)', author: 'KAROL G', maxDuration: 172, url: 'BeUOBoSPWvA'},
-
-        ]},
-        {id: 1, name: 'Mi playlist 2', songs: [
-            {id: 0, name: 'Feid, ICON - FERXXO 151 (Official Video)', author: 'Feid', maxDuration: 227, url: 'ww7UQTDsPEc'},
-            {id: 1, name: 'KAROL G - MI EX TENÍA RAZÓN (Official Video)', author: 'KAROL G', maxDuration: 161, url: 'VBcs8DZxBGc'},
-            {id: 2, name: 'YoSoyPlex, Ruven - Modo Avión (Video Oficial)', author: 'YoSoyPlex', maxDuration: 175, url: '2bczbzNRO4Y'},
-        ]},
-    ]);
-    const [playlistActive, setPlaylistActive] = useState(-1);
+    const [Playlists, setPlaylists] = useState<Playlist[]>([]);
+    const [openedCreatePlaylist, setOpenedCreatePlaylist] = useState(false);
+    const [playlistActive, setPlaylistActive] = useState(0);
     const newPlaylist = async (name:string) => {
         try {
             const res = await fetchNui<number>('getNewPlaylist', name);
@@ -59,20 +47,16 @@ export default function Main({playSong}:Props) {
     }
 
     const deletePlaylist = async () => {
-        setPlaylistActive(-1);
+        setPlaylistActive(!playlistActive ? 0 : playlistActive - 1);
         fetchNui('deletePlayList', Playlists[playlistActive].id);
     }
 
     useNuiEvent('getPlaylists', getPlaylists);
     return (
         <div className="main">
-            <Library Playlists={Playlists} setPlaylistActive={setPlaylistActive} playlistActive={playlistActive} newPlaylist={newPlaylist}/>
-            <DisplayPlaylist Playlists={Playlists} playlistActive={playlistActive} playSong={playSong} exitPlaylist={()=>{deletePlaylist()}}/>
+            <Library Playlists={Playlists} setPlaylistActive={setPlaylistActive} playlistActive={playlistActive} setOpenedPlaylist={setOpenedCreatePlaylist}/>
+            <DisplayPlaylist Playlists={Playlists} playlistActive={playlistActive} playSong={playSong} exitPlaylist={()=>{deletePlaylist()}} setOpenedPlaylist={setOpenedCreatePlaylist}/>
+            <ModalAddPlaylist opened={openedCreatePlaylist} close={()=>{setOpenedCreatePlaylist(false)}} newPlaylist={newPlaylist} />
         </div>
     );
 }
-
-function UseEffect(arg0: () => void, arg1: never[]) {
-    throw new Error('Function not implemented.');
-}
-  

@@ -19,6 +19,7 @@ debugData([
 export interface VideoObject {
     volume: number;
     url: string;
+    //@ts-ignore
     playerRef: React.RefObject<YT.Player | null>;
     time: number;
 }
@@ -54,8 +55,8 @@ const App: React.FC = () => {
     const [pausedTime, setPausedTime] = useState(0);
     const [paused, setPaused] = useState(false);
     const [repros, setRepros] = useState<VideoObject[]>([]);
-    const [name, setName] = useState('Desconocido')
-    const [author, setAuthor] = useState('Desconocido')
+    const [name, setName] = useState('Unkown')
+    const [author, setAuthor] = useState('Unkown')
     const [image, setImage] = useState('https://media.discordapp.net/attachments/919641744704954461/1128672258425114726/Screenshot_1.png')
 
     const playSong = (songUrl : string, playlist: Playlist, index: number) => {
@@ -143,8 +144,21 @@ const App: React.FC = () => {
         fetchNui('changeDist', {repro: reproActive, dist: n})
     }
 
+    const getLibraryLabel = async () => {
+        try {
+            const res = await fetchNui<string>('Unkown');
+            if (res) {
+                setName(res)
+                setAuthor(res)
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     useEffect(()=> {
         fetchNui('webLoaded')
+        getLibraryLabel()
     }, [])
 
     useNuiEvent<number>('setRepro', loadRepro);

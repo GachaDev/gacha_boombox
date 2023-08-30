@@ -30,7 +30,7 @@ export default function Cover({ playlist, width }: Props) {
                     <img
                         className="playlist-cover-image"
                         src={playlist.songs.length === 0 ? 'https://media.discordapp.net/attachments/919641744704954461/1128672258425114726/Screenshot_1.png' : `https://i.ytimg.com/vi/${playlist.songs[0].url}/mqdefault.jpg`}
-                        alt={'default'}
+                        alt={'defaulet'}
                     />
                 </div>
             )}

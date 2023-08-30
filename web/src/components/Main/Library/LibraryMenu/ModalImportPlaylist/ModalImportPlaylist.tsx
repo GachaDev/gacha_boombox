@@ -1,5 +1,5 @@
 import { NumberInput , Modal } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchNui } from "../../../../../utils/fetchNui";
 
 interface Props {
@@ -24,12 +24,29 @@ export default function ModalImportPlaylist({opened, close}:Props) {
             close();
         }
     }
+    const [importPlaylistLabel, setImportPlaylistLabel] = useState('Import playlist');
+
+
+    const getLibraryLabel = async () => {
+        try {
+            const res = await fetchNui<string>('importPlaylistLabel');
+            if (res) {
+                setImportPlaylistLabel(res)
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    useEffect(()=>{
+        getLibraryLabel();
+    }, [])
 
     return (
-        <Modal opened={opened} onClose={close} title="Importar playlist existente">
+        <Modal opened={opened} onClose={close} title={importPlaylistLabel}>
             <NumberInput
                 hideControls
-                label="Playlist id"
+                label="Id"
                 required
                 maw={320}
                 min={1}
@@ -38,7 +55,7 @@ export default function ModalImportPlaylist({opened, close}:Props) {
                 mx={"auto"}
             />
             <div className='contBut'>
-                <button onClick={()=>{importPlaylist()}} className='addSongButton'>Importar Playlist</button>
+                <button onClick={()=>{importPlaylist()}} className='addSongButton'>{importPlaylistLabel}</button>
             </div>
         </Modal>
     );

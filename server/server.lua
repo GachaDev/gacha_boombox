@@ -1,4 +1,4 @@
-local Speakers = {}
+Speakers = {}
 
 function SufficientDistance(coords)
     local minDistance = true
@@ -10,18 +10,6 @@ function SufficientDistance(coords)
     end
     return minDistance
 end
-
-RegisterCommand('createSpeaker', function(source)
-    local src = source
-    local enoughDistance = SufficientDistance(GetEntityCoords(GetPlayerPed(src)))
-    if enoughDistance then
-        local data = {volume = 50, url = '', coords = GetEntityCoords(GetPlayerPed(src)), playlistPLaying = {}, time = 0, maxDistance = 15, isPlaying = false, maxDuration = 5000000, songId = -2, permaDisabled = false, paused = false, pausedTime = 0}
-        table.insert(Speakers, data)
-        TriggerClientEvent('gacha_boombox:client:insertSpeaker', -1, data)
-    else
-        TriggerClientEvent('gacha_boombox:client:notify', src, 'Debes de reservar un poco mas de distancia respecto al otro altavoz cercano')
-    end
-end)
 
 RegisterNetEvent('gacha_boombox:server:Playsong', function(data)
     if data and data.repro and tonumber(data.repro) and Speakers[tonumber(data.repro + 1)] then
@@ -61,11 +49,15 @@ RegisterNetEvent('gacha_boombox:server:SyncNewDist', function(data)
 end)
 
 RegisterNetEvent('gacha_boombox:server:deleteBoombox', function(id, x)
+    local src = source
     if Speakers[id] and Speakers[id].coords and Speakers[id].coords.x and Speakers[id].coords.x == x and not Speakers[id].permaDisabled then
         Speakers[id].permaDisabled = true
         Speakers[id].playlistPLaying = {}
         Speakers[id].url = ''
         TriggerClientEvent('gacha_boombox:client:deleteBoombox', -1, id)
+        if Config.useItem then
+            AddItem(src)
+        end
     end
 end)
 
@@ -142,10 +134,11 @@ end)
 CreateCallback("gacha_boombox:callback:getNewPlaylist", function(source, cb, data)
     local license = GetPlayerIdentifierByType(source, 'license')
     if data == '' then
-        data = 'New Playlist'
+        data = Config.Translations.newPlaylist
     end
-    local idPlaylist = MySQL.insert.await('INSERT INTO gacha_playlists (name) VALUES (?)', {
-        data
+    local idPlaylist = MySQL.insert.await('INSERT INTO gacha_playlists (name, owner) VALUES (?)', {
+        data,
+        license
     })
     local idPlaylistUser = MySQL.insert.await('INSERT INTO gacha_playlists_users (playlist, license) VALUES (?, ?)', {
         idPlaylist,
@@ -205,8 +198,13 @@ end)
 
 RegisterNetEvent('gacha_boombox:server:deleteSongPlaylist', function(data)
     local src = source
-    MySQL.query('DELETE FROM gacha_playlist_songs WHERE id = ? and playlist = ?', { data.songId, data.playlist }, function()
-        TriggerClientEvent('gacha_boombox:client:resyncPlaylists', src)
+    local license = GetPlayerIdentifierByType(src, 'license')
+    MySQL.Async.fetchAll("SELECT owner FROM gacha_playlists WHERE id = @playlist", {['@playlist'] = tonumber(data.playlist)}, function(results)
+        if results[1].owner == license then
+            MySQL.query('DELETE FROM gacha_playlist_songs WHERE id = ? and playlist = ?', { data.songId, data.playlist }, function()
+                TriggerClientEvent('gacha_boombox:client:resyncPlaylists', src)
+            end)
+        end
     end)
 end)
 
@@ -287,3 +285,17 @@ RegisterNetEvent('gacha_boombox:server:pauseSong', function(data)
         TriggerClientEvent('gacha_boombox:client:updateBoombox', -1, tonumber(data.repro + 1), v)
     end
 end)
+
+function CreateSpeaker(src)
+    local enoughDistance = SufficientDistance(GetEntityCoords(GetPlayerPed(src)))
+    if enoughDistance then
+        local data = {volume = 50, url = '', coords = GetEntityCoords(GetPlayerPed(src)), playlistPLaying = {}, time = 0, maxDistance = 15, isPlaying = false, maxDuration = 5000000, songId = -2, permaDisabled = false, paused = false, pausedTime = 0}
+        table.insert(Speakers, data)
+        if Config.useItem then
+            DeleteItem(src)
+        end
+        TriggerClientEvent('gacha_boombox:client:insertSpeaker', -1, data)
+    else
+        TriggerClientEvent('gacha_boombox:client:notify', src, Config.Translations.notEnoughDistance)
+    end
+end

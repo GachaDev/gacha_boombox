@@ -27,6 +27,7 @@ export default function Repros({ repros, setRepros }: ReprosProps) {
                     onReady={event => {
                         const updatedRepros = [...repros];
                         updatedRepros[i].playerRef = {current: {}};
+                        //@ts-ignore
                         updatedRepros[i].playerRef.current = event.target;
                         updatedRepros[i].playerRef.current?.setVolume(val.volume);
                         updatedRepros[i].playerRef.current?.seekTo(val.time)

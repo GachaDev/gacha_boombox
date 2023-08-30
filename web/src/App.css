@@ -436,3 +436,8 @@ body {
 #timeVideo {
     flex: 4;
 }
+
+.createPlaylist:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
