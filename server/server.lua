@@ -136,7 +136,7 @@ CreateCallback("gacha_boombox:callback:getNewPlaylist", function(source, cb, dat
     if data == '' then
         data = Config.Translations.newPlaylist
     end
-    local idPlaylist = MySQL.insert.await('INSERT INTO gacha_playlists (name, owner) VALUES (?)', {
+    local idPlaylist = MySQL.insert.await('INSERT INTO gacha_playlists (name, owner) VALUES (?, ?)', {
         data,
         license
     })
