@@ -31,3 +31,9 @@ files {
 dependencies {
   'oxmysql'
 }
+
+escrow_ignore {
+  'Config.lua',
+  'server/server_edit.lua',
+  'client/client_edit.lua'
+}
