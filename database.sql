@@ -1,7 +1,7 @@
 CREATE TABLE `gacha_playlists` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(50) NOT NULL DEFAULT '0',
-	`owner` VARCHAR(50) NOT NULL DEFAULT '',
+	`owner` VARCHAR(255) NOT NULL DEFAULT '',
 	PRIMARY KEY (`id`)
 )
 COLLATE='utf8mb4_general_ci'
@@ -19,7 +19,7 @@ COLLATE='utf8mb4_general_ci'
 ;
 CREATE TABLE `gacha_playlists_users` (
 	`id` INT NOT NULL AUTO_INCREMENT,
-	`license` VARCHAR(50) NOT NULL DEFAULT '',
+	`license` VARCHAR(255) NOT NULL DEFAULT '',
 	`playlist` INT NOT NULL DEFAULT 0,
 	INDEX `license` (`license`),
 	PRIMARY KEY (`id`),
