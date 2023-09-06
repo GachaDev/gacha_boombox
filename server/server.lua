@@ -81,7 +81,7 @@ Citizen.CreateThread(function()
         local sleep = 10000
         local time = os.time() * 1000
         for k,v in pairs(Speakers) do
-            if v.playlistPLaying.songs then
+            if v.playlistPLaying.songs and not v.permaDisabled then
                 local nextSong = (v.time + v.maxDuration * 1000) - time
                 if sleep > nextSong then
                     sleep = nextSong
