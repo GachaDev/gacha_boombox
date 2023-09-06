@@ -1,4 +1,5 @@
 Speakers = {}
+local objects = {}
 
 function SufficientDistance(coords)
     local minDistance = true
@@ -54,6 +55,8 @@ RegisterNetEvent('gacha_boombox:server:deleteBoombox', function(id, x)
         Speakers[id].permaDisabled = true
         Speakers[id].playlistPLaying = {}
         Speakers[id].url = ''
+        DeleteEntity(objects[id])
+        objects[id] = -1
         TriggerClientEvent('gacha_boombox:client:deleteBoombox', -1, id)
         if Config.useItem then
             AddItem(src)
@@ -90,6 +93,13 @@ Citizen.CreateThread(function()
                         v.isPlaying = false
                         v.songId = v.songId + 1
                         v.maxDuration = v.playlistPLaying.songs[v.songId].maxDuration
+                        TriggerClientEvent('gacha_boombox:client:updateBoombox', -1, k, v)
+                    else
+                        v.url = v.playlistPLaying.songs[1].url
+                        v.time = os.time() * 1000
+                        v.isPlaying = false
+                        v.songId = 1
+                        v.maxDuration = v.playlistPLaying.songs[1].maxDuration
                         TriggerClientEvent('gacha_boombox:client:updateBoombox', -1, k, v)
                     end
                 end
@@ -289,13 +299,53 @@ end)
 function CreateSpeaker(src)
     local enoughDistance = SufficientDistance(GetEntityCoords(GetPlayerPed(src)))
     if enoughDistance then
-        local data = {volume = 50, url = '', coords = GetEntityCoords(GetPlayerPed(src)), playlistPLaying = {}, time = 0, maxDistance = 15, isPlaying = false, maxDuration = 5000000, songId = -2, permaDisabled = false, paused = false, pausedTime = 0}
+        local data = {volume = 50, url = '', coords = GetEntityCoords(GetPlayerPed(src)), playlistPLaying = {}, time = 0, maxDistance = 15, isPlaying = false, maxDuration = 5000000, songId = -2, permaDisabled = false, paused = false, pausedTime = 0, isMoving = false, playerMoving = -2}
         table.insert(Speakers, data)
         if Config.useItem then
             DeleteItem(src)
         end
+        TriggerClientEvent('gacha_boombox:client:doAnim', src)
+        Citizen.Wait(1000)
+        local obj = CreateObject('prop_boombox_01', data.coords - vector3(0.0, 0.0, 1.0), true, false, true)
+        table.insert(objects, obj)
         TriggerClientEvent('gacha_boombox:client:insertSpeaker', -1, data)
     else
         TriggerClientEvent('gacha_boombox:client:notify', src, Config.Translations.notEnoughDistance)
     end
 end
+
+AddEventHandler('onResourceStop', function(resourceName)
+    if (GetCurrentResourceName() ~= resourceName) then
+        return
+    end
+    for k,v in pairs(objects) do
+        if v ~= -1 then
+            DeleteEntity(v)
+        end
+    end
+end)
+
+CreateCallback("gacha_boombox:callback:canMove", function(source, cb, id)
+    local src = source
+    if not Speakers[id].isMoving then
+        Speakers[id].isMoving = true
+        Speakers[id].playerMoving = src
+        DeleteEntity(objects[id])
+        objects[id] = -1
+        TriggerClientEvent('gacha_boombox:client:updatePlayerMoving', -1, id, src)
+    end
+    cb(Speakers[id].isMoving)
+end)
+
+RegisterNetEvent('gacha_boombox:server:updateObjectCoords', function(id)
+    local src = source
+    if Speakers[id].isMoving and Speakers[id].playerMoving == src then
+        local coords = GetEntityCoords(GetPlayerPed(src))
+        local obj = CreateObject('prop_boombox_01', coords - vector3(0.0, 0.0, 1.0), true, false, true)
+        objects[id] = obj
+        Speakers[id].isMoving = false
+        Speakers[id].coords = coords
+        Speakers[id].playerMoving = -1
+        TriggerClientEvent('gacha_boombox:client:syncLastCoords', -1, id, coords)
+    end
+end)
