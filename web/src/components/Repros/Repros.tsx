@@ -9,10 +9,10 @@ interface ReprosProps {
 export default function Repros({ repros, setRepros }: ReprosProps) {
     return (
         <div className='videoYoutube'>
-            {repros.map((val, i) => (
+            {repros && repros.map((val, i) => (
                 <YouTube
-                    key={val.url}
-                    videoId={val.url}
+                    key={i}
+                    videoId={val?.url}
                     opts={{
                         playerVars: {
                             autoplay: 1,
@@ -23,6 +23,9 @@ export default function Repros({ repros, setRepros }: ReprosProps) {
                             start: val.time,
                             quality: "small"
                         },
+                    }}
+                    onError={error => {
+                        console.error('YouTube player error:', error);
                     }}
                     onReady={event => {
                         const updatedRepros = [...repros];

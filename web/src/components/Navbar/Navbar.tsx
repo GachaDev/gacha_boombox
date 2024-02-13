@@ -46,7 +46,7 @@ export default function Navbar({author, name, image, volumeReproActive, setVolum
     const changeTime = (val: number) => {
         setValue(val);
         if (repros[reproActive]) {
-            repros[reproActive].playerRef?.current?.seekTo(val)
+            repros[reproActive]?.playerRef?.current?.seekTo(val)
         }
     }
 
@@ -55,7 +55,7 @@ export default function Navbar({author, name, image, volumeReproActive, setVolum
     }
 
     const updateTime = () => {
-        if (repros[reproActive] && repros[reproActive].playerRef && repros[reproActive].playerRef.current && repros[reproActive].playerRef.current.playerInfo && !paused) {
+        if (repros[reproActive] && repros[reproActive]?.playerRef && repros[reproActive]?.playerRef?.current && repros[reproActive]?.playerRef?.current?.playerInfo && !paused) {
             setValue(repros[reproActive].playerRef.current.playerInfo.currentTime);
         }
         if (paused) {
@@ -64,7 +64,7 @@ export default function Navbar({author, name, image, volumeReproActive, setVolum
     }
 
     const pauseSong = () => {
-        fetchNui('pauseSong', {repro: reproActive, value: repros[reproActive].playerRef.current.playerInfo.currentTime, time: new Date().getTime()})
+        fetchNui('pauseSong', {repro: reproActive, value: repros[reproActive]?.playerRef?.current?.playerInfo?.currentTime, time: new Date().getTime()})
     }
 
     useEffect(()=> {

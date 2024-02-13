@@ -117,7 +117,7 @@ const App: React.FC = () => {
 
     const changeVolume = (data:dataVolume) => {
         if (repros[data.repro] && repros[data.repro].playerRef && repros[data.repro].playerRef.current && repros[data.repro].playerRef.current.playerInfo) {
-            repros[data.repro].playerRef?.current?.setVolume(data.volume);
+            repros[data.repro]?.playerRef?.current?.setVolume(data.volume);
         }
     }
 
@@ -141,7 +141,7 @@ const App: React.FC = () => {
         if (repros[reproActive]) {
             fetchNui('tempChangeVolume', {repro: reproActive, volume: n})
             setVolumeReproActive(n);
-            repros[reproActive].playerRef?.current?.setVolume(n);
+            repros[reproActive]?.playerRef?.current?.setVolume(n);
         }
     }
 
