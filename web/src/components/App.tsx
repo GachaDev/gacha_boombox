@@ -87,33 +87,37 @@ const App: React.FC = () => {
                 volume: 50,
                 time: 0
             };
-    
+
             setRepros(prevRepros => [...prevRepros, newRepro]);
         }
     };
 
     const playSongB = (data: data) => {
         const updatedRepros = [...repros];
-        updatedRepros[data.repro].url = '';
-        setRepros(updatedRepros);
-        const uR = [...repros];
-        uR[data.repro].url = data.url;
-        uR[data.repro].volume = data.volume;
-        const timeDifferenceInSeconds = Math.floor((new Date().getTime() - data.time) / 1000);
-        uR[data.repro].time = timeDifferenceInSeconds;
-        setRepros(uR);
-        uR[data.repro].playerRef.current.seekTo(timeDifferenceInSeconds);
+        if (updatedRepros[data.repro]) {
+            updatedRepros[data.repro].url = '';
+            setRepros(updatedRepros);
+            const uR = [...repros];
+            uR[data.repro].url = data.url;
+            uR[data.repro].volume = data.volume;
+            const timeDifferenceInSeconds = Math.floor((new Date().getTime() - data.time) / 1000);
+            uR[data.repro].time = timeDifferenceInSeconds;
+            setRepros(uR);
+            uR[data.repro].playerRef?.current?.seekTo(timeDifferenceInSeconds);
+        }
     };
 
     const stopSong = (n: number) => {
         const updatedRepros = [...repros];
-        updatedRepros[n].url = '';
-        setRepros(updatedRepros);
+        if (updatedRepros[n]) {
+            updatedRepros[n].url = '';
+            setRepros(updatedRepros);
+        }
     }
 
     const changeVolume = (data:dataVolume) => {
         if (repros[data.repro] && repros[data.repro].playerRef && repros[data.repro].playerRef.current && repros[data.repro].playerRef.current.playerInfo) {
-            repros[data.repro].playerRef.current.setVolume(data.volume);
+            repros[data.repro].playerRef?.current?.setVolume(data.volume);
         }
     }
 
@@ -134,9 +138,11 @@ const App: React.FC = () => {
     }
 
     const tempChangeVolume = (n:number) => {
-        fetchNui('tempChangeVolume', {repro: reproActive, volume: n})
-        setVolumeReproActive(n);
-        repros[reproActive].playerRef.current.setVolume(n);
+        if (repros[reproActive]) {
+            fetchNui('tempChangeVolume', {repro: reproActive, volume: n})
+            setVolumeReproActive(n);
+            repros[reproActive].playerRef?.current?.setVolume(n);
+        }
     }
 
     const changeDist = (n:number) => {

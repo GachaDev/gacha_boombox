@@ -35,17 +35,19 @@ export default function Navbar({author, name, image, volumeReproActive, setVolum
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
         const remainingSeconds = Math.floor(seconds % 60);
-    
+
         const formattedHours = hours > 0 ? `${hours}:` : '';
         const formattedMinutes = `${minutes < 10 && hours > 0 ? '0' : ''}${minutes}`;
         const formattedSeconds = `${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-    
+
         return `${formattedHours}${formattedMinutes}:${formattedSeconds}`;
-    }    
+    }
 
     const changeTime = (val: number) => {
         setValue(val);
-        repros[reproActive].playerRef.current.seekTo(val)
+        if (repros[reproActive]) {
+            repros[reproActive].playerRef?.current?.seekTo(val)
+        }
     }
 
     const syncTime = (val: number) => {
