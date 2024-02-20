@@ -48,7 +48,7 @@ export default function DisplayPlaylist({Playlists, playlistActive, playSong, ex
     return (
         <div className="playlistSection">
             {
-                Playlists[playlistActive] ? 
+                Playlists[playlistActive] ?
                 (
                     <div className="playlistCont">
                         <div className="iPlaylist">
@@ -73,7 +73,7 @@ export default function DisplayPlaylist({Playlists, playlistActive, playSong, ex
                             {Playlists[playlistActive]?.songs.map((value, index) => (
                                 <div className='songPlaylist' key={index} onMouseEnter={() => setIsHovered(index)} onMouseLeave={() => setIsHovered(-1)} >
                                     <div className='imgContainer' >
-                                        <img className={`imgSong ${isHovered === index ? 'hovered' : ''}`} src={`https://i.ytimg.com/vi/${value.url}/mqdefault.jpg`} alt={value.name}/>                          
+                                        <img className={`imgSong ${isHovered === index ? 'hovered' : ''}`} src={`https://i.ytimg.com/vi/${value.url}/mqdefault.jpg`} alt={value.name}/>
                                         {isHovered === index && (
                                             <div className='playSong' onClick={()=>{playSong(value.url, Playlists[playlistActive], index)}}>
                                                 <ActionIcon variant="transparent">
@@ -97,7 +97,7 @@ export default function DisplayPlaylist({Playlists, playlistActive, playSong, ex
                                     </div>
                                 </div>
                             ))}
-                        </div>  
+                        </div>
                     </div>
                 ) : (
                     <div className="noPlaylistSelected">
@@ -109,4 +109,3 @@ export default function DisplayPlaylist({Playlists, playlistActive, playSong, ex
         </div>
     );
 }
-  

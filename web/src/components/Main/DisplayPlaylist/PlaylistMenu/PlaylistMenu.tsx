@@ -48,7 +48,6 @@ export default function PlaylistMenu({playlistActive, exitPlaylist}:Props) {
                 </Menu.Dropdown>
             </Menu>
             <AddModal opened={openedMenu} close={()=>{setOpenedMenu(false)}} playlistActive={playlistActive} />
-        </div>  
+        </div>
     );
 }
-  

@@ -29,7 +29,7 @@ export default function Main({playSong}:Props) {
                         name: name,
                         songs: []
                     };
-            
+
                     setPlaylists(prevPlaylists => [...prevPlaylists, newPlaylist]);
                 }
             }

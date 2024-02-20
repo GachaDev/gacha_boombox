@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, createRef, useState } from "react";
 import {debugData} from "../utils/debugData";
 import Main from "./Main/Main";
 import Repros from "./Repros/Repros";
@@ -75,7 +75,7 @@ const App: React.FC = () => {
             setRepros([
                 {
                     url: data,
-                    playerRef: {current: {}},
+                    playerRef: createRef<YT.Player | null>(),
                     volume: 50,
                     time: 0
                 }
@@ -83,13 +83,23 @@ const App: React.FC = () => {
         } else {
             const newRepro: VideoObject = {
                 url: data,
-                playerRef: {current: {}},
+                playerRef: createRef<YT.Player | null>(),
                 volume: 50,
                 time: 0
             };
 
             setRepros(prevRepros => [...prevRepros, newRepro]);
         }
+    };
+
+    const createReproGlobal = (speakers: data[]) => {
+        setRepros(speakers.map((speaker : data) => ({
+            url: speaker.url,
+            playerRef: createRef<YT.Player | null>(),
+            volume: speaker.volume,
+            time: speaker.time
+        })));
+        console.log('Speakers loaded in nui')
     };
 
     const playSongB = (data: data) => {
@@ -103,7 +113,7 @@ const App: React.FC = () => {
             const timeDifferenceInSeconds = Math.floor((new Date().getTime() - data.time) / 1000);
             uR[data.repro].time = timeDifferenceInSeconds;
             setRepros(uR);
-            uR[data.repro].playerRef?.current?.seekTo(timeDifferenceInSeconds);
+            uR[data.repro].playerRef?.current?.seekTo(timeDifferenceInSeconds, false);
         }
     };
 
@@ -116,7 +126,7 @@ const App: React.FC = () => {
     }
 
     const changeVolume = (data:dataVolume) => {
-        if (repros[data.repro] && repros[data.repro].playerRef && repros[data.repro].playerRef.current && repros[data.repro].playerRef.current.playerInfo) {
+        if (repros[data.repro] && repros[data.repro].playerRef && repros[data.repro].playerRef.current && repros[data.repro]?.playerRef?.current?.getVolume()) {
             repros[data.repro]?.playerRef?.current?.setVolume(data.volume);
         }
     }
@@ -169,6 +179,7 @@ const App: React.FC = () => {
 
     useNuiEvent<number>('setRepro', loadRepro);
     useNuiEvent<string>('createRepro', createRepro);
+    useNuiEvent<data[]>('createReproGlobal', createReproGlobal);
     useNuiEvent<data>('playSong', playSongB);
     useNuiEvent<number>('stopSong', stopSong);
     useNuiEvent<dataVolume>('changeVolume', changeVolume);

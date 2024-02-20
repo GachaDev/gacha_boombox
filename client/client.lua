@@ -30,10 +30,8 @@ end)
 
 function LoadSpeakers()
     TriggerCallback('gacha_boombox:callback:getBoomboxs', function(result)
-        for k,v in pairs(result) do
-            SendReactMessage('createRepro', '')
-            Wait(100)
-        end
+        print('Try to load Speakers in nui')
+        SendReactMessage('createReproGlobal', result)
         Wait(200)
         speakers = result
     end)
@@ -239,7 +237,7 @@ Citizen.CreateThread(function()
             if IsControlJustPressed(1, Config.KeyToPlaceSpeaker) then
                 if not HasAnimDictLoaded('anim@heists@money_grab@briefcase') then
                     RequestAnimDict('anim@heists@money_grab@briefcase')
-            
+
                     while not HasAnimDictLoaded('anim@heists@money_grab@briefcase') do
                         Citizen.Wait(1)
                     end
@@ -343,4 +341,8 @@ end)
 
 RegisterNUICallback('secondFirstMessage', function(_, cb)
     cb(Config.Translations.secondFirstMessage)
+end)
+
+RegisterCommand(Config.fixSpeakersCommand, function ()
+    LoadSpeakers()
 end)

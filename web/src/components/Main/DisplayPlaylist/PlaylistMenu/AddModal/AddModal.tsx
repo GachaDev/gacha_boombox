@@ -46,7 +46,7 @@ export default function AddModal({opened, close, playlistActive}:Props) {
             url: urlT,
             name: title,
             author: author,
-            maxDuration: playerRef.current.getDuration(),
+            maxDuration: playerRef?.current?.getDuration(),
             playlistActive: playlistActive
         };
         fetchNui('addSong', newSong)

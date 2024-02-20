@@ -46,7 +46,7 @@ export default function Navbar({author, name, image, volumeReproActive, setVolum
     const changeTime = (val: number) => {
         setValue(val);
         if (repros[reproActive]) {
-            repros[reproActive]?.playerRef?.current?.seekTo(val)
+            repros[reproActive]?.playerRef?.current?.seekTo(val, false)
         }
     }
 
@@ -55,16 +55,27 @@ export default function Navbar({author, name, image, volumeReproActive, setVolum
     }
 
     const updateTime = () => {
-        if (repros[reproActive] && repros[reproActive]?.playerRef && repros[reproActive]?.playerRef?.current && repros[reproActive]?.playerRef?.current?.playerInfo && !paused) {
-            setValue(repros[reproActive].playerRef.current.playerInfo.currentTime);
+        if (
+            repros[reproActive] &&
+            repros[reproActive]?.playerRef &&
+            repros[reproActive]?.playerRef?.current &&
+            repros[reproActive]?.playerRef?.current?.getCurrentTime &&
+            !paused
+        ) {
+            const currentTime = repros[reproActive]?.playerRef?.current?.getCurrentTime();
+
+            if (typeof currentTime === 'number') {
+                setValue(currentTime);
+            }
         }
+
         if (paused) {
             setValue(pausedTime);
         }
-    }
+    };
 
     const pauseSong = () => {
-        fetchNui('pauseSong', {repro: reproActive, value: repros[reproActive]?.playerRef?.current?.playerInfo?.currentTime, time: new Date().getTime()})
+        fetchNui('pauseSong', {repro: reproActive, value: repros[reproActive]?.playerRef?.current?.getCurrentTime(), time: new Date().getTime()})
     }
 
     useEffect(()=> {
@@ -118,7 +129,23 @@ export default function Navbar({author, name, image, volumeReproActive, setVolum
                     <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                         <Volume size={'1rem'} />
                         <div>
-                            <Slider color="gray" size="xs" showLabelOnHover={false} className="volumeSLider" value={volumeReproActive} onChangeEnd={(event)=>{setVolumeReproActive(event)}} onChange={(event)=>{tempChangeVolume(event)}} />
+                            <Slider
+                                color="gray"
+                                size="xs"
+                                showLabelOnHover={false}
+                                className="volumeSLider"
+                                value={volumeReproActive}
+                                onChangeEnd={(event) => {
+                                    if (typeof event === 'number') {
+                                        setVolumeReproActive(event);
+                                    }
+                                }}
+                                onChange={(event) => {
+                                    if (typeof event === 'number') {
+                                        tempChangeVolume(event);
+                                    }
+                                }}
+                            />
                         </div>
                     </div>
                 </div>

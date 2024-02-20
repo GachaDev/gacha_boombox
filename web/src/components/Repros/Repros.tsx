@@ -1,5 +1,6 @@
 import YouTube from "react-youtube";
 import { VideoObject } from "../App";
+import { createRef } from 'react';
 
 interface ReprosProps {
     repros: VideoObject[];
@@ -30,11 +31,11 @@ export default function Repros({ repros, setRepros }: ReprosProps) {
                     onReady={event => {
                         const updatedRepros = [...repros];
                         if (updatedRepros[i]) {
-                            updatedRepros[i].playerRef = {current: {}};
+                            updatedRepros[i].playerRef = createRef<YT.Player | null>();
                             //@ts-ignore
                             updatedRepros[i].playerRef.current = event.target;
                             updatedRepros[i].playerRef.current?.setVolume(val.volume);
-                            updatedRepros[i].playerRef.current?.seekTo(val.time)
+                            updatedRepros[i].playerRef.current?.seekTo(val.time, false)
                             setRepros(updatedRepros);
                         }
                     }}
