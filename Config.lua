@@ -3,6 +3,7 @@ Config.framework = 'qbcore' --(qbcore/esx/custom)
 Config.useItem = true
 Config.fixSpeakersCommand = "fixSpeakers" --If speakers dont load use this command to reload all the speakers
 Config.itemName = 'speaker' --You need to had this item created in your config or database
+Config.timeZone = "Europe/Madrid" --IMPORTANT to set what time zone is your server in
 Config.KeyAccessUi = 38
 Config.KeyDeleteSpeaker = 194
 Config.KeyToMove = 311

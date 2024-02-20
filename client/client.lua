@@ -343,6 +343,10 @@ RegisterNUICallback('secondFirstMessage', function(_, cb)
     cb(Config.Translations.secondFirstMessage)
 end)
 
+RegisterNUICallback('timeZone', function(_, cb)
+    cb(Config.timeZone)
+end)
+
 RegisterCommand(Config.fixSpeakersCommand, function ()
     LoadSpeakers()
 end)

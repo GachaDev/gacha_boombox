@@ -56,6 +56,7 @@ const App: React.FC = () => {
     const [paused, setPaused] = useState(false);
     const [repros, setRepros] = useState<VideoObject[]>([]);
     const [name, setName] = useState('Unkown')
+    const [timeZone, setTimeZone] = useState('')
     const [author, setAuthor] = useState('Unkown')
     const [image, setImage] = useState('https://media.discordapp.net/attachments/919641744704954461/1128672258425114726/Screenshot_1.png')
 
@@ -63,7 +64,8 @@ const App: React.FC = () => {
         setAuthor(playlist.songs[index].author);
         setImage('https://i.ytimg.com/vi/' + playlist.songs[index].url + '/mqdefault.jpg');
         setName(playlist.songs[index].name);
-        fetchNui('playSong', {url: songUrl, repro: reproActive, time: new Date().getTime(), playlist: playlist})
+        const timeMsec = new Date(new Date().toLocaleString('en-US', { timeZone: timeZone })).getTime();
+        fetchNui('playSong', {url: songUrl, repro: reproActive, time: timeMsec, playlist: playlist})
     };
 
     const loadRepro = (repro: number) => {
@@ -110,7 +112,8 @@ const App: React.FC = () => {
             const uR = [...repros];
             uR[data.repro].url = data.url;
             uR[data.repro].volume = data.volume;
-            const timeDifferenceInSeconds = Math.floor((new Date().getTime() - data.time) / 1000);
+            const timeMsec = new Date(new Date().toLocaleString('en-US', { timeZone: timeZone })).getTime();
+            const timeDifferenceInSeconds = Math.floor((timeMsec - data.time) / 1000);
             uR[data.repro].time = timeDifferenceInSeconds;
             setRepros(uR);
             uR[data.repro].playerRef?.current?.seekTo(timeDifferenceInSeconds, false);
@@ -172,9 +175,21 @@ const App: React.FC = () => {
         }
     }
 
+    const getTimeZone = async () => {
+        try {
+            const res = await fetchNui<string>('timeZone');
+            if (res) {
+                setTimeZone(res)
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     useEffect(()=> {
         fetchNui('webLoaded')
         getLibraryLabel()
+        getTimeZone()
     }, [])
 
     useNuiEvent<number>('setRepro', loadRepro);
