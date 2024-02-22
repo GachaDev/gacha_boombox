@@ -55,7 +55,9 @@ RegisterNetEvent('gacha_boombox:server:deleteBoombox', function(id, x)
         Speakers[id].permaDisabled = true
         Speakers[id].playlistPLaying = {}
         Speakers[id].url = ''
-        DeleteEntity(objects[id])
+        if objects[id] and objects[id] ~= -1 and DoesEntityExist(objects[id]) then
+            DeleteEntity(objects[id])
+        end
         objects[id] = -1
         TriggerClientEvent('gacha_boombox:client:deleteBoombox', -1, id)
         if Config.useItem then
@@ -319,7 +321,7 @@ AddEventHandler('onResourceStop', function(resourceName)
         return
     end
     for k,v in pairs(objects) do
-        if v ~= -1 then
+        if v ~= -1 and DoesEntityExist(v) then
             DeleteEntity(v)
         end
     end
@@ -330,7 +332,9 @@ CreateCallback("gacha_boombox:callback:canMove", function(source, cb, id)
     if not Speakers[id].isMoving then
         Speakers[id].isMoving = true
         Speakers[id].playerMoving = src
-        DeleteEntity(objects[id])
+        if objects[id] and objects[id] ~= -1 and DoesEntityExist(objects[id]) then
+            DeleteEntity(objects[id])
+        end
         objects[id] = -1
         TriggerClientEvent('gacha_boombox:client:updatePlayerMoving', -1, id, src)
     end
